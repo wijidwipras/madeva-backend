@@ -1,4 +1,5 @@
 const employeeService = require('../services/employee.service');
+const { employeeSchema } = require('../domains/employee.domain'); // skema Yup
 
 const getAllEmployeesController = async (req, res, next) => {
   try {
@@ -16,7 +17,40 @@ const getAllEmployeesController = async (req, res, next) => {
   }
 };
 
+const postEmployeeController = async (req, res, next) => {
+  try {
+    const validatedData = await employeeSchema.validate(req.body, {
+      abortEarly: false, // all error validasi, not first
+      stripUnknown: true, // delete req not use in schema
+    });
+
+    const employees = await employeeService.postEmployee(validatedData);
+    res.status(200).json({
+      status: 'success',
+      message: 'Berhasil menambah data karyawan',
+      data: employees,
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') { // Error Yup
+      const errors = error.inner.reduce((acc, err) => {
+        acc[err.path] = err.message;
+        return acc;
+      }, {});
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Data yang diberikan tidak valid',
+        errors,
+      });
+    }
+
+    return res.status(error.statusCode || 500).json({
+      status: 'error',
+      message: error.message || 'Gagal menambahkan karyawan baru',
+    });
+  }
+};
+
 module.exports = {
   getAllEmployeesController,
-  // ...
+  postEmployeeController
 };

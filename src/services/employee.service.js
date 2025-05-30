@@ -86,9 +86,19 @@ const putEmployee = async (employeeId, validatedData) => {
   }
 };
 
+const deleteEmployeeById = async (id) => {
+    try {
+      const employee = await employeeRepository.deleteEmployeeById(id);
+      return employee;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 module.exports = {
   getAllEmployees,
   postEmployee,
   getEmployeeById,
-  putEmployee
+  putEmployee,
+  deleteEmployeeById
 };

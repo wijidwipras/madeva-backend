@@ -176,9 +176,16 @@ const editEmployeeById = async (employeeId, editEmployeeData) => {
     return rows[0];
 }
 
+const deleteEmployeeById = async (id) => {
+    const query = `DELETE FROM m_employee WHERE id = $1`;
+    const { rows } = await db.query(query, [id]);
+    return rows[0];
+  };
+
 module.exports = {
   findAllEmployees,
   createEmployee,
   findEmployeeById,
-  editEmployeeById
+  editEmployeeById,
+  deleteEmployeeById
 };

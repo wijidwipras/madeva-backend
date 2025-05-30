@@ -117,9 +117,29 @@ const putEmployeeController = async (req, res, next) => {
   }
 };
 
+const deleteEmployeeByIdController = async (req, res, next) => {
+  try {
+    const employeeId = req.params.id;
+    const employee = await employeeService.deleteEmployeeById(employeeId);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Berhasil menghapus data karyawan',
+      data: employee,
+    });
+  } catch (error) {
+    res.status(500).json({
+        status: 'error',
+        message: error.message || 'Gagal menghapus data karyawan',
+    });
+  }
+};
+
+
 module.exports = {
   getAllEmployeesController,
   postEmployeeController,
   getEmployeeByIdController,
-  putEmployeeController
+  putEmployeeController,
+  deleteEmployeeByIdController
 };

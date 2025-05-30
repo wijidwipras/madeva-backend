@@ -3,6 +3,6 @@ const employeeRoutes = require('./employee.routes');
 
 const router = express.Router();
 
-router.use('/employees', employeeRoutes);
+router.use('/employee', employeeRoutes);
 
 module.exports = router;

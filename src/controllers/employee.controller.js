@@ -17,6 +17,31 @@ const getAllEmployeesController = async (req, res, next) => {
   }
 };
 
+const getEmployeeByIdController = async (req, res, next) => {
+  try {
+    const employeeId = req.params.id;
+    const employee = await employeeService.getEmployeeById(employeeId);
+
+    if (!employee) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Karyawan tidak ditemukan.',
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Berhasil mengambil data semua karyawan',
+      data: employee,
+    });
+  } catch (error) {
+    res.status(500).json({
+        status: 'error',
+        message: error.message || 'Gagal mengambil data karyawan',
+    });
+  }
+};
+
 const postEmployeeController = async (req, res, next) => {
   try {
     const validatedData = await employeeSchema.validate(req.body, {
@@ -50,7 +75,51 @@ const postEmployeeController = async (req, res, next) => {
   }
 };
 
+const putEmployeeController = async (req, res, next) => {
+  try {
+    const employeeId = req.params.id;
+
+    const validatedData = await employeeSchema.validate(req.body, {
+      abortEarly: false, // all error validasi, not first
+      stripUnknown: true, // delete req not use in schema
+    });
+
+    const employee = await employeeService.putEmployee(employeeId, validatedData);
+    if (!employee) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Karyawan tidak ditemukan.',
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Berhasil mengubah data karyawan',
+      data: employee,
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') { // Error Yup
+      const errors = error.inner.reduce((acc, err) => {
+        acc[err.path] = err.message;
+        return acc;
+      }, {});
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Data yang diberikan tidak valid',
+        errors,
+      });
+    }
+
+    return res.status(error.statusCode || 500).json({
+      status: 'error',
+      message: error.message || 'Gagal menambahkan karyawan baru',
+    });
+  }
+};
+
 module.exports = {
   getAllEmployeesController,
-  postEmployeeController
+  postEmployeeController,
+  getEmployeeByIdController,
+  putEmployeeController
 };

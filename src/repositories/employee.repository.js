@@ -1,9 +1,75 @@
 const db = require("../config/db");
 
-const findAllEmployees = async () => {
-  const query = `SELECT id, nama_lengkap, no_ktp_nik, jenis_kelamin, tempat_lahir, tanggal_lahir, no_telepon, alamat, provinsi, kota_kabupaten, kecamatan, kelurahan, kode_pos, username, email, tipe_karyawan, tanggal_mulai_kontrak, tanggal_selesai_kontrak, status_menikah, foto_profil_url, kode_dokter_bpjs, created_at, updated_at FROM m_employee ORDER BY nama_lengkap ASC`;
-  const { rows } = await db.query(query);
-  return rows;
+const findAllEmployees = async (filters = {}) => {
+  const { status, search, tipe_karyawan, page = 1, limit = 10 } = filters;
+
+  let query = `
+      SELECT 
+        id, nama_lengkap, no_ktp_nik, jenis_kelamin, 
+        status, 
+        tempat_lahir, tanggal_lahir, no_telepon, alamat, provinsi, 
+        kota_kabupaten, kecamatan, kelurahan, kode_pos, username, email, 
+        tipe_karyawan, tanggal_mulai_kontrak, tanggal_selesai_kontrak, 
+        status_menikah, foto_profil_url, kode_dokter_bpjs, created_at, updated_at 
+      FROM 
+        m_employee
+    `;
+
+  const conditions = [];
+  const values = [];
+  let placeholderCount = 1;
+
+  if (status) {
+    if (
+      status.toLowerCase() === "aktif" ||
+      status.toLowerCase() === "non-aktif"
+    ) {
+      conditions.push(`status = $${placeholderCount++}`);
+      values.push(status.toLowerCase());
+    }
+  }
+
+  if (search) {
+    conditions.push(
+      `(nama_lengkap ILIKE $${placeholderCount++} OR no_ktp_nik ILIKE $${placeholderCount++})`
+    );
+    values.push(`%${search}%`);
+    values.push(`%${search}%`);
+  }
+
+  if (tipe_karyawan) {
+    conditions.push(`tipe_karyawan = $${placeholderCount++}`);
+    values.push(tipe_karyawan);
+  }
+
+  if (conditions.length > 0) {
+    query += ` WHERE ${conditions.join(" AND ")}`;
+  }
+
+  query += ` ORDER BY nama_lengkap ASC`;
+
+  // Pagination
+  const offset = (page - 1) * limit;
+  query += ` LIMIT $${placeholderCount++} OFFSET $${placeholderCount++}`;
+  values.push(limit);
+  values.push(offset);
+
+  // total
+  let countQuery = `SELECT COUNT(*) FROM m_employee`;
+  if (conditions.length > 0) {
+    const countValues = values.slice(0, placeholderCount - 3); // 2 terakhir = limit dan offset
+    countQuery += ` WHERE ${conditions.join(" AND ")}`;
+    const { rows: countRows } = await db.query(countQuery, countValues);
+    const totalRecords = parseInt(countRows[0].count, 10);
+    const { rows } = await db.query(query, values);
+    return { rows, totalRecords, page, limit };
+  } else {
+    // Jika tidak ada filter, countValues kosong
+    const { rows: countRows } = await db.query(countQuery);
+    const totalRecords = parseInt(countRows[0].count, 10);
+    const { rows } = await db.query(query, values);
+    return { rows, totalRecords, page, limit };
+  }
 };
 
 const findEmployeeById = async (id) => {

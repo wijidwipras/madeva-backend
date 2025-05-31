@@ -2,9 +2,51 @@ const employeeRepository = require("../repositories/employee.repository");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 
-const getAllEmployees = async () => {
+const parseQueryStringToFilters = (queryString) => {
+  const filters = {
+    page: 1, // Default page
+    limit: 10, // Default limit
+  };
+
+  if (!queryString) {
+    return filters;
+  }
+
+  const params = new URLSearchParams(queryString);
+
+  if (params.has("status")) {
+    filters.status = params.get("status").toLowerCase();
+  }
+
+  if (params.has("search")) {
+    filters.search = params.get("search");
+  }
+
+  if (params.has("tipe_karyawan")) {
+    filters.tipe_karyawan = params.get("tipe_karyawan");
+  }
+
+  if (params.has("page")) {
+    const page = parseInt(params.get("page"), 10);
+    if (!isNaN(page) && page > 0) {
+      filters.page = page;
+    }
+  }
+
+  if (params.has("limit")) {
+    const limit = parseInt(params.get("limit"), 10);
+    if (!isNaN(limit) && limit > 0) {
+      filters.limit = limit;
+    }
+  }
+
+  return filters;
+};
+
+const getAllEmployees = async (param) => {
   try {
-    const employees = await employeeRepository.findAllEmployees();
+    const filter = parseQueryStringToFilters(param)
+    const employees = await employeeRepository.findAllEmployees(filter);
     return employees;
   } catch (error) {
     throw error;

@@ -1,9 +1,11 @@
 const express = require('express');
 const mainRoutes = require('./routes/index');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 
-// Middleware standar
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

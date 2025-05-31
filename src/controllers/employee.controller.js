@@ -3,11 +3,17 @@ const { employeeSchema } = require('../domains/employee.domain'); // skema Yup
 
 const getAllEmployeesController = async (req, res, next) => {
   try {
-    const employees = await employeeService.getAllEmployees();
+    const param = req._parsedUrl.query;
+    const employees = await employeeService.getAllEmployees(param);
     res.status(200).json({
       status: 'success',
       message: 'Berhasil mengambil data semua karyawan',
-      data: employees,
+      data: {
+        data: employees.rows,
+        total: employees.totalRecords,
+        page: employees.page,
+        limit: employees.limit
+      },
     });
   } catch (error) {
     res.status(500).json({

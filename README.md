@@ -65,6 +65,7 @@ API service untuk mengelola data karyawan sebagai bagian dari Tes Fullstack Deve
 
 ## Struktur Folder Utama
 Proyek ini mencoba mengikuti prinsip Clean Architecture [cite: 1] dengan pemisahan sebagai berikut:
+```
 src/
 ├── api/                # (Jika menggunakan struktur presentasi lebih dalam)
 ├── config/             # Konfigurasi database, environment variables
@@ -77,6 +78,7 @@ src/
 ├── utils/              # Fungsi-fungsi utilitas
 ├── app.js              # Konfigurasi utama aplikasi Express
 └── server.js           # Titik masuk untuk menjalankan server HTTP
+```
 
 ## API Endpoints (Contoh)
 Semua endpoint di-prefix dengan `/api`. Beberapa endpoint memerlukan token otentikasi dummy.

@@ -1,11 +1,16 @@
 const express = require('express');
 const mainRoutes = require('./routes/index');
+const cors = require('cors');
+const loggerMiddleware = require('./middlewares/logger.middleware');
 
 const app = express();
+app.use(cors());
 
-// Middleware standar
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(loggerMiddleware);
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url} - ${new Date().toISOString()}`);

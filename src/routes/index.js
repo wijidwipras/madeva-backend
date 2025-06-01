@@ -1,8 +1,10 @@
 const express = require('express');
-const testRoutes = require('./test.routes');
+const employeeRoutes = require('./employee.routes');
+const authRoutes = require('./auth.routes');
 
 const router = express.Router();
 
-router.use('/test', testRoutes);
+router.use('/employee', employeeRoutes);
+router.use('/auth', authRoutes);
 
 module.exports = router;

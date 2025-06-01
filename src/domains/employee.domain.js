@@ -28,6 +28,7 @@ const employeeSchema = Yup.object({
   status_menikah: Yup.string().optional().oneOf(MARITAL_STATUS_ENUM, 'Status menikah tidak valid'),
   foto_profil_url: Yup.string().optional().url('URL foto profil tidak valid').max(255),
   kode_dokter_bpjs: Yup.string().optional(),
+  status: Yup.string().required('Status wajib diisi.'),
 });
 
 const employeeUpdateSchema = Yup.object({
@@ -45,7 +46,7 @@ const employeeUpdateSchema = Yup.object({
     kode_pos: Yup.string().optional().nullable().max(10),
     username: Yup.string().optional().min(3, 'Username minimal 3 karakter jika diisi').max(50),
     email: Yup.string().email('Format email tidak valid jika diisi').optional().max(100),
-    password: Yup.string().optional().min(6, 'Password minimal 6 karakter jika diisi'),
+    password: Yup.string().optional().nullable().min(6, 'Password minimal 6 karakter jika diisi'),
     tipe_karyawan: Yup.string().optional().nullable(),
     tanggal_mulai_kontrak: Yup.date().optional().nullable().typeError('Format tanggal mulai kontrak tidak valid jika diisi'),
     tanggal_selesai_kontrak: Yup.date().optional().nullable().typeError('Format tanggal selesai kontrak tidak valid jika diisi')
@@ -55,6 +56,8 @@ const employeeUpdateSchema = Yup.object({
     status_menikah: Yup.string().optional().nullable().oneOf(MARITAL_STATUS_ENUM, 'Status menikah tidak valid jika diisi'),
     foto_profil_url: Yup.string().optional().nullable().url('URL foto profil tidak valid jika diisi').max(255),
     kode_dokter_bpjs: Yup.string().optional().nullable(),
+  status: Yup.string().required('Status wajib diisi.'),
+
   });
 
 module.exports = {

@@ -1,5 +1,5 @@
 const employeeService = require('../services/employee.service');
-const { employeeSchema } = require('../domains/employee.domain'); // skema Yup
+const { employeeSchema, employeeUpdateSchema } = require('../domains/employee.domain'); // skema Yup
 
 const getAllEmployeesController = async (req, res, next) => {
   try {
@@ -85,7 +85,7 @@ const putEmployeeController = async (req, res, next) => {
   try {
     const employeeId = req.params.id;
 
-    const validatedData = await employeeSchema.validate(req.body, {
+    const validatedData = await employeeUpdateSchema.validate(req.body, {
       abortEarly: false, // all error validasi, not first
       stripUnknown: true, // delete req not use in schema
     });

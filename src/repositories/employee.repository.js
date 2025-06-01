@@ -73,7 +73,13 @@ const findAllEmployees = async (filters = {}) => {
 };
 
 const findEmployeeById = async (id) => {
-  const query = `SELECT id, nama_lengkap, no_ktp_nik, jenis_kelamin, tempat_lahir, tanggal_lahir, no_telepon, alamat, provinsi, kota_kabupaten, kecamatan, kelurahan, kode_pos, username, email, tipe_karyawan, tanggal_mulai_kontrak, tanggal_selesai_kontrak, status_menikah, foto_profil_url, kode_dokter_bpjs, created_at, updated_at FROM m_employee WHERE id = $1`;
+  const query = `SELECT id, nama_lengkap, no_ktp_nik, jenis_kelamin, tempat_lahir, tanggal_lahir, no_telepon, alamat, provinsi, kota_kabupaten, kecamatan, kelurahan, kode_pos, username, email, tipe_karyawan, tanggal_mulai_kontrak, tanggal_selesai_kontrak, status_menikah, foto_profil_url, kode_dokter_bpjs, status, created_at, updated_at FROM m_employee WHERE id = $1`;
+  const { rows } = await db.query(query, [id]);
+  return rows[0];
+};
+
+const findPWById = async (id) => {
+  const query = `SELECT id, password_hash FROM m_employee WHERE id = $1`;
   const { rows } = await db.query(query, [id]);
   return rows[0];
 };
@@ -102,6 +108,7 @@ const createEmployee = async (employeeData) => {
     status_menikah,
     foto_profil_url,
     kode_dokter_bpjs,
+    status
   } = employeeData;
 
   const query = `
@@ -109,10 +116,10 @@ const createEmployee = async (employeeData) => {
       id, nama_lengkap, no_ktp_nik, jenis_kelamin, tempat_lahir, tanggal_lahir,
       no_telepon, alamat, provinsi, kota_kabupaten, kecamatan, kelurahan, kode_pos,
       username, email, password_hash, tipe_karyawan, tanggal_mulai_kontrak,
-      tanggal_selesai_kontrak, status_menikah, foto_profil_url, kode_dokter_bpjs
+      tanggal_selesai_kontrak, status_menikah, foto_profil_url, kode_dokter_bpjs, status
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-      $17, $18, $19, $20, $21, $22
+      $17, $18, $19, $20, $21, $22, $23
     ) RETURNING id, nama_lengkap, email, username, created_at;
   `;
 
@@ -139,6 +146,7 @@ const createEmployee = async (employeeData) => {
     status_menikah,
     foto_profil_url,
     kode_dokter_bpjs,
+    status
   ];
 
   // dummy value
@@ -174,7 +182,8 @@ const editEmployeeById = async (employeeId, editEmployeeData) => {
         tanggal_selesai_kontrak,
         status_menikah,
         foto_profil_url,
-        kode_dokter_bpjs
+        kode_dokter_bpjs,
+        status
     } = editEmployeeData;
 
     const query = `
@@ -201,8 +210,9 @@ const editEmployeeById = async (employeeId, editEmployeeData) => {
         status_menikah = $19,
         foto_profil_url = $20,
         kode_dokter_bpjs = $21,
+        status = $22,
         updated_at = CURRENT_TIMESTAMP
-      WHERE id = $22
+      WHERE id = $23
       RETURNING id, nama_lengkap, email, username, updated_at;
     `;
 
@@ -228,7 +238,8 @@ const editEmployeeById = async (employeeId, editEmployeeData) => {
         status_menikah,        // $19
         foto_profil_url,       // $20
         kode_dokter_bpjs,      // $21
-        employeeId             // $22
+        status,               // $22
+        employeeId             // $23
     ];
 
     // dummy value
@@ -253,5 +264,6 @@ module.exports = {
   createEmployee,
   findEmployeeById,
   editEmployeeById,
-  deleteEmployeeById
+  deleteEmployeeById,
+  findPWById
 };

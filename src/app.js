@@ -1,24 +1,21 @@
-const express = require('express');
-const mainRoutes = require('./routes/index');
+const express = require('express')
+const cors = require('cors')
+const mainRoutes = require('./routes/index')
+const errorHandler = require('./middleware/errorHandler')
 
-const app = express();
+const app = express()
 
-// Middleware standar
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} - ${new Date().toISOString()}`);
-  next();
-});
+  console.log(`${req.method} ${req.url} - ${new Date().toISOString()}`)
+  next()
+})
 
-// Main Utama
-app.use('/api', mainRoutes);
+app.use('/api', mainRoutes)
 
-// Main Error Handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ error: 'Terjadi kesalahan pada server!' });
-});
+app.use(errorHandler)
 
-module.exports = app;
+module.exports = app

@@ -1,8 +1,10 @@
-const express = require('express');
-const testRoutes = require('./test.routes');
+const express = require('express')
+const authRoutes = require('./auth.routes')
+const kategoriRuanganRoutes = require('./kategoriRuangan.routes')
 
-const router = express.Router();
+const router = express.Router()
 
-router.use('/test', testRoutes);
+router.use('/auth', authRoutes)
+router.use('/kategori-ruangan', kategoriRuanganRoutes)
 
-module.exports = router;
+module.exports = router

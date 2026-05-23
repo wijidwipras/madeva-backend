@@ -93,4 +93,17 @@ const update = (id, data) => {
   })
 }
 
-module.exports = { getAll, getById, create, update }
+const getKelasRuangan = (idKlinik) => {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT id, nama_kelas, is_active FROM kelas_ruangan WHERE id_klinik = ? AND is_active = 1 ORDER BY created_at ASC`,
+      [idKlinik],
+      (err, rows) => {
+        if (err) return reject(err)
+        resolve(rows)
+      }
+    )
+  })
+}
+
+module.exports = { getAll, getById, create, update, getKelasRuangan }

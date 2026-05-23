@@ -49,4 +49,14 @@ const update = async (req, res, next) => {
   }
 }
 
-module.exports = { getAll, getById, create, update }
+const getKelasRuangan = async (req, res, next) => {
+  try {
+    const idKlinik = req.user.id_klinik
+    const result = await kategoriService.getKelasRuangan(idKlinik)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { getAll, getById, create, update, getKelasRuangan }

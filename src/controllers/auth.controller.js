@@ -3,10 +3,10 @@ const { verifyRecaptcha } = require('../utils/recaptcha')
 
 const login = async (req, res, next) => {
   try {
-    const { username, password, recaptchaToken } = req.body
+    const { kodeAuth, username, password, recaptchaToken } = req.body
 
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username dan password wajib diisi' })
+    if (!kodeAuth || !username || !password) {
+      return res.status(400).json({ error: 'Kode Klinik, username, dan password wajib diisi' })
     }
 
     // Verifikasi reCAPTCHA token jika ada
@@ -17,7 +17,7 @@ const login = async (req, res, next) => {
       }
     }
 
-    const result = await authService.login(username, password)
+    const result = await authService.login(kodeAuth, username, password)
     res.json(result)
   } catch (err) {
     next(err)

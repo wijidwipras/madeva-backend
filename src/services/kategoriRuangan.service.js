@@ -93,6 +93,36 @@ const update = (id, data) => {
   })
 }
 
+const toggleStatus = (id) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE kategori_ruangan
+       SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [id],
+      function (err) {
+        if (err) return reject(err)
+        if (this.changes === 0) return reject({ status: 404, message: 'Data tidak ditemukan' })
+        db.get(
+          `SELECT kr.*, kel.nama_kelas
+           FROM kategori_ruangan kr
+           LEFT JOIN kelas_ruangan kel ON kr.id_kelas_ruangan = kel.id
+           WHERE kr.id = ?`,
+          [id],
+          (err2, row) => {
+            if (err2) return reject(err2)
+            resolve({
+              ...row,
+              fasilitas_ruangan: row.fasilitas_ruangan ? JSON.parse(row.fasilitas_ruangan) : null,
+            })
+          }
+        )
+      }
+    )
+  })
+}
+
 const getKelasRuangan = (idKlinik) => {
   return new Promise((resolve, reject) => {
     db.all(
@@ -106,4 +136,4 @@ const getKelasRuangan = (idKlinik) => {
   })
 }
 
-module.exports = { getAll, getById, create, update, getKelasRuangan }
+module.exports = { getAll, getById, create, update, toggleStatus, getKelasRuangan }

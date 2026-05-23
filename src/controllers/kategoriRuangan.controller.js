@@ -72,6 +72,18 @@ const update = async (req, res, next) => {
   }
 }
 
+const toggleStatus = async (req, res, next) => {
+  try {
+    const result = await kategoriService.toggleStatus(req.params.id)
+    res.json(result)
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({ error: err.message })
+    }
+    next(err)
+  }
+}
+
 const getKelasRuangan = async (req, res, next) => {
   try {
     const idKlinik = req.user.id_klinik
@@ -82,4 +94,4 @@ const getKelasRuangan = async (req, res, next) => {
   }
 }
 
-module.exports = { getAll, getById, create, update, getKelasRuangan }
+module.exports = { getAll, getById, create, update, toggleStatus, getKelasRuangan }

@@ -1,4 +1,16 @@
 const kategoriService = require('../services/kategoriRuangan.service')
+const yup = require('yup')
+
+const createSchema = yup.object({
+  id_kelas_ruangan: yup.string().required('Kelas ruangan wajib dipilih'),
+  nama_ruangan: yup.string().max(100).required('Nama ruangan wajib diisi'),
+  harga_ruangan: yup.string().max(100).required('Harga ruangan wajib diisi'),
+  jenis_kelamin: yup.string().max(20).nullable(),
+  usia: yup.string().max(20).nullable(),
+  penyakit: yup.string().max(100).nullable(),
+  fasilitas_ruangan: yup.array().of(yup.string()).nullable(),
+  is_active: yup.boolean().nullable(),
+})
 
 const getAll = async (req, res, next) => {
   try {
@@ -21,12 +33,10 @@ const getById = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
+    await createSchema.validate(req.body, { abortEarly: false })
+
     const { v4: uuidv4 } = require('uuid')
-    // Ambil klinik_id dari user (asumsi user terkait 1 klinik untuk mock)
-    // Untuk mock, kita hardcode klinik_id dari user pertama yang login
-    // Sebenarnya di DB user punya id_klinik, tapi di token kita belum simpan.
-    // Untuk simplicity, ambil dari req.body atau default.
-    const id_klinik = req.body.id_klinik || req.user.id_klinik || 'default-klinik'
+    const id_klinik = req.user.id_klinik
 
     const data = {
       id: uuidv4(),
@@ -36,15 +46,28 @@ const create = async (req, res, next) => {
     const result = await kategoriService.create(data)
     res.status(201).json(result)
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({
+        error: 'Validasi gagal',
+        details: err.inner.map(e => ({ field: e.path, message: e.message })),
+      })
+    }
     next(err)
   }
 }
 
 const update = async (req, res, next) => {
   try {
+    await createSchema.validate(req.body, { abortEarly: false })
     const result = await kategoriService.update(req.params.id, req.body)
     res.json(result)
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({
+        error: 'Validasi gagal',
+        details: err.inner.map(e => ({ field: e.path, message: e.message })),
+      })
+    }
     next(err)
   }
 }

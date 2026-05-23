@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: madeva-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: madeva-db
+          property: connectionString
+
+databases:
+  - name: madeva-db
+    plan: free
+    databaseName: madeva

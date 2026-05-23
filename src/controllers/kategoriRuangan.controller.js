@@ -5,6 +5,7 @@ const createSchema = yup.object({
   id_kelas_ruangan: yup.string().required('Kelas ruangan wajib dipilih'),
   nama_ruangan: yup.string().max(100).required('Nama ruangan wajib diisi'),
   harga_ruangan: yup.string().max(100).required('Harga ruangan wajib diisi'),
+  jumlah_kamar: yup.number().typeError('Jumlah kamar harus berupa angka').min(0, 'Jumlah kamar minimal 0').nullable(),
   jenis_kelamin: yup.string().max(20).nullable(),
   usia: yup.string().max(20).nullable(),
   penyakit: yup.string().max(100).nullable(),

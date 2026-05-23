@@ -62,6 +62,7 @@ const initTables = () => {
           penyakit VARCHAR(100),
           nama_ruangan VARCHAR(100) NOT NULL,
           harga_ruangan VARCHAR(100) NOT NULL,
+          jumlah_kamar INTEGER DEFAULT 0,
           fasilitas_ruangan TEXT,
           is_active BOOLEAN DEFAULT 1,
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -70,8 +71,12 @@ const initTables = () => {
           FOREIGN KEY (id_kelas_ruangan) REFERENCES kelas_ruangan(id)
         )
       `, (err) => {
-        if (err) reject(err)
-        else resolve()
+        if (err) return reject(err)
+        // Migration: add jumlah_kamar column if it doesn't exist
+        db.run(`ALTER TABLE kategori_ruangan ADD COLUMN jumlah_kamar INTEGER DEFAULT 0`, (err2) => {
+          // Ignore error if column already exists
+          resolve()
+        })
       })
     })
   })

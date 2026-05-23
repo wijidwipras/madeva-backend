@@ -63,11 +63,11 @@ const getById = (id) => {
 
 const create = (data) => {
   return new Promise((resolve, reject) => {
-    const { id, id_klinik, id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, fasilitas_ruangan } = data
+    const { id, id_klinik, id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, jumlah_kamar, fasilitas_ruangan } = data
     db.run(
-      `INSERT INTO kategori_ruangan (id, id_klinik, id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, fasilitas_ruangan, is_active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-      [id, id_klinik, id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, JSON.stringify(fasilitas_ruangan || [])],
+      `INSERT INTO kategori_ruangan (id, id_klinik, id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, jumlah_kamar, fasilitas_ruangan, is_active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      [id, id_klinik, id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, jumlah_kamar || 0, JSON.stringify(fasilitas_ruangan || [])],
       function (err) {
         if (err) return reject(err)
         resolve({ id, ...data })
@@ -78,12 +78,12 @@ const create = (data) => {
 
 const update = (id, data) => {
   return new Promise((resolve, reject) => {
-    const { id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, fasilitas_ruangan, is_active } = data
+    const { id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, jumlah_kamar, fasilitas_ruangan, is_active } = data
     db.run(
       `UPDATE kategori_ruangan
-       SET id_kelas_ruangan = ?, jenis_kelamin = ?, usia = ?, penyakit = ?, nama_ruangan = ?, harga_ruangan = ?, fasilitas_ruangan = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+       SET id_kelas_ruangan = ?, jenis_kelamin = ?, usia = ?, penyakit = ?, nama_ruangan = ?, harga_ruangan = ?, jumlah_kamar = ?, fasilitas_ruangan = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
        WHERE id = ?`,
-      [id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, JSON.stringify(fasilitas_ruangan || []), is_active !== undefined ? (is_active ? 1 : 0) : 1, id],
+      [id_kelas_ruangan, jenis_kelamin, usia, penyakit, nama_ruangan, harga_ruangan, jumlah_kamar || 0, JSON.stringify(fasilitas_ruangan || []), is_active !== undefined ? (is_active ? 1 : 0) : 1, id],
       function (err) {
         if (err) return reject(err)
         if (this.changes === 0) return reject({ status: 404, message: 'Data tidak ditemukan' })
